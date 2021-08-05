@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:vector_math/vector_math.dart';
 
 // 速度を算出する
