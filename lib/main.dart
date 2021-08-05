@@ -69,11 +69,6 @@ class _MyAppState extends State<MyApp> {
 
   void onTick() {
     setState(() {
-      // v = velocity(v0, t, a);
-      // p = position(v0, t, a);
-      p += at(v0, 1, t, vw);
-      ap += at(av0, 1, t, t != 0.5 ? avw : math.Vector3.all(0));
-
       t += 0.005;
     });
   }
