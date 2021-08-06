@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:sparkler/spark.dart';
+import 'package:sparkler/particle.dart';
 
 class SparkPainter extends CustomPainter {
-  SparkPainter(this.sparks);
+  SparkPainter(this.particles);
 
-  final List<Spark> sparks;
+  final Iterable<Particle> particles;
 
   @override
   void paint(Canvas canvas, Size size) {
-    sparks.forEach(
+    particles.forEach(
       (e) => canvas.drawCircle(
         Offset(e.position.x, e.position.y),
-        10,
+        e.radius * 5,
         Paint(),
       ),
     );

@@ -21,6 +21,7 @@ class CanvasState extends State<Canvas> with SingleTickerProviderStateMixin {
       ..addListener(state.update)
       ..forward();
     super.initState();
+    state.init();
   }
 
   @override
@@ -28,7 +29,7 @@ class CanvasState extends State<Canvas> with SingleTickerProviderStateMixin {
     return AnimatedBuilder(
       animation: controller,
       builder: (context, child) => CustomPaint(
-        painter: SparkPainter(state.sparks),
+        painter: SparkPainter(state.particles),
         size: Size(double.infinity, double.infinity),
       ),
     );
