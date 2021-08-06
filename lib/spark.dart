@@ -1,21 +1,35 @@
 import 'package:vector_math/vector_math.dart';
 
+const milliSecPerFrame = 0.116;
+
 class Spark {
-  Spark(this.mass, this.acceraration, this.velocity, this.position, this.);
+  Spark({
+    required this.acceraration,
+    required this.velocity,
+    required this.position,
+  });
   final Vector3 acceraration;
   final Vector3 velocity;
   final Vector3 position;
-  final double mass;
-  final double ;
 
   // 線香花火の燃焼時間は40sほど
   // 線香花火の質量を0.5gとし、一定の速度で燃焼するとした時、
   // 0.5g : 40s = mass g : lifetime
   // より、
   // lifetime = mass * 80
-  late final double lifetime = mass * 80;
+  // late final double lifetime = mass * 80;
 
-  List<Spark> advance() {}
+  List<Spark> advance() {
+    print('advance');
+    return [
+      Spark(
+        acceraration: Vector3(0, 9.8, 0),
+        velocity: _calculateVelocity(velocity, acceraration, milliSecPerFrame),
+        position: _calculatePosition(
+            position, velocity, acceraration, milliSecPerFrame),
+      ),
+    ];
+  }
 
   // 速度を算出する
   Vector3 _calculateVelocity(Vector3 v0, Vector3 a, double t) => Vector3(

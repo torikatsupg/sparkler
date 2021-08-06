@@ -10,7 +10,7 @@ class SparkPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     sparks.forEach(
       (e) => canvas.drawCircle(
-        Offset(e.x, e.y),
+        Offset(e.position.x, e.position.y),
         10,
         Paint(),
       ),
