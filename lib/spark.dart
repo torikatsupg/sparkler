@@ -4,6 +4,9 @@ import 'package:sparkler/spark_state.dart';
 import 'package:vector_math/vector_math.dart';
 
 const milliSecPerFrame = 0.116;
+const radiusCoefficient = 1 / 2.11 * 4 / 3 * pi;
+const div3 = 1 / 3;
+final random = Random();
 
 class Spark {
   Spark({
@@ -32,7 +35,7 @@ class Spark {
   // 火花の体積=質量/2.11になる
   // 火花は球体である
   // 球体の体積は V = 3/4πr^3より、r=
-  late final double radius = pow(mass / 2.11 * 4 / 3 * pi, 1 / 3).toDouble();
+  late final double radius = pow(mass * radiusCoefficient, div3).toDouble();
 
   List<Spark> advance() {
     if (mass < 0.0001) {
@@ -53,12 +56,11 @@ class Spark {
       ];
     }
 
-    final random = Random();
     final weight = random.nextDouble();
     final nextPosition =
         _calcPosition(position, velocity, acceraration, milliSecPerFrame);
     final m1 = mass * weight;
-    final maxVelocity = (mass / initMass * 100).toInt();
+    final maxVelocity = initVelocity * mass ~/ initMass;
     if (maxVelocity <= 0) {
       return [];
     }
