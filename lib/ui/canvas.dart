@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sparkler/spark_painter.dart';
-import 'package:sparkler/spark_state.dart';
+import 'package:sparkler/ui/canvas_painter.dart';
+import 'package:sparkler/ui/app_state.dart';
 
 class Canvas extends StatefulWidget {
   const Canvas({Key? key}) : super(key: key);
@@ -10,7 +10,7 @@ class Canvas extends StatefulWidget {
 
 class CanvasState extends State<Canvas> with SingleTickerProviderStateMixin {
   late final AnimationController controller;
-  final state = SparkState();
+  final state = AppState();
 
   @override
   void initState() {
@@ -29,7 +29,7 @@ class CanvasState extends State<Canvas> with SingleTickerProviderStateMixin {
     return AnimatedBuilder(
       animation: controller,
       builder: (context, child) => CustomPaint(
-        painter: SparkPainter(state.particles),
+        painter: CanvasPainter(state.particles),
         size: Size(double.infinity, double.infinity),
         isComplex: true,
         willChange: true,

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:sparkler/particle.dart';
+import 'package:sparkler/model/particle.dart';
 
-class SparkPainter extends CustomPainter {
-  SparkPainter(this.particles);
+class CanvasPainter extends CustomPainter {
+  CanvasPainter(this.particles);
 
   final Iterable<Particle> particles;
 

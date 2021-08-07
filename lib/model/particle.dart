@@ -1,4 +1,4 @@
-import 'package:sparkler/vector.dart';
+import 'package:sparkler/model/vector.dart';
 
 class Particle {
   const Particle(this.position, this.radius, this.opacity);

@@ -1,5 +1,5 @@
-import 'package:sparkler/spark.dart';
-import 'package:sparkler/vector.dart';
+import 'package:sparkler/model/spark.dart';
+import 'package:sparkler/model/vector.dart';
 
 final windMaxVelocity = Vector.all(1.5);
 

@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sparkler/canvas.dart';
-
-void main() {
-  runApp(MyApp());
-}
+import 'package:sparkler/ui/canvas.dart';
 
 class MyApp extends StatelessWidget {
   @override

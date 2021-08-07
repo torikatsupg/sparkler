@@ -1,8 +1,8 @@
-import 'package:sparkler/particle.dart';
-import 'package:sparkler/spark.dart';
-import 'package:sparkler/wind.dart';
+import 'package:sparkler/model/particle.dart';
+import 'package:sparkler/model/spark.dart';
+import 'package:sparkler/model/wind.dart';
 
-class SparkState {
+class AppState {
   List<Spark> sparks = [];
 
   Iterable<Particle> particles = [];

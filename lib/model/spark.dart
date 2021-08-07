@@ -1,8 +1,8 @@
 import 'dart:math';
 
-import 'package:sparkler/particle.dart';
-import 'package:sparkler/random.dart';
-import 'package:sparkler/vector.dart';
+import 'package:sparkler/model/particle.dart';
+import 'package:sparkler/util/random.dart';
+import 'package:sparkler/model/vector.dart';
 
 const milliSecPerFrame = 0.116;
 const particleCount = 11;
