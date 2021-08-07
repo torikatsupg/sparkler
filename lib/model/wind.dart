@@ -7,7 +7,7 @@ class Wind {
   const Wind(this.velocity);
   final Vector velocity;
 
-  factory Wind.init() => Wind(Vector.zero());
+  factory Wind.init() => Wind(Vector.zero);
 
   Wind update() => Wind(
       (velocity + Vector(_createRandomVelocity(), 0, _createRandomVelocity()))

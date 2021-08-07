@@ -1,10 +1,14 @@
 import 'package:vector_math/vector_math.dart';
 
+typedef DoubleGenerator = double Function();
+
 class Vector {
   Vector(double x, double y, double z) : this._vector = Vector3(x, y, z);
 
-  factory Vector.zero() => Vector(0, 0, 0);
+  static final zero = Vector.all(0);
   factory Vector.all(double value) => Vector(value, value, value);
+  factory Vector.each(DoubleGenerator generator) =>
+      Vector(generator(), generator(), generator());
 
   Vector.fromVector3(this._vector);
 

@@ -9,6 +9,13 @@ class MyRandom {
 
   double nextIntAsDoubleWith(double max) => nextInt(max.toInt()).toDouble();
 
+  double nextDoubleInclude1() => _random.nextDouble() + 1;
+
+  double nextIntAsDoubleWithSign(int max) => nextIntAsDouble(max) * nextSign();
+
+  double Function() nextIntAsDoubleWithSignGenerator(int max) =>
+      () => nextIntAsDoubleWithSign(max);
+
   double nextDouble() => _random.nextDouble();
 
   bool nextBool() => _random.nextBool();

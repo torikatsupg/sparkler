@@ -1,14 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:sparkler/ui/canvas.dart';
+import 'package:sparkler/run.dart';
 
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Sparkler',
-      home: Scaffold(
-        body: Canvas(),
-      ),
-    );
-  }
-}
+void main() => run();

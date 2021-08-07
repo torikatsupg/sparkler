@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
-import 'package:sparkler/main.dart';
+import 'package:sparkler/app.dart';
 
-void main() {
-  runApp(MyApp());
-}
+
+
+void run() => runApp(App());
