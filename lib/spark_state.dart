@@ -16,7 +16,7 @@ class SparkState {
   void update() {
     sparks = [
       ...sparks.map((e) => e.advance()).expand((e) => e),
-      if (random.nextDouble() > 0.9) Spark.create(),
+      if (random.nextDouble() > 0.8) Spark.create(),
     ];
     particles = sparks.map((e) => e.createParticles()).expand((e) => e);
   }
