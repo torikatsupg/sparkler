@@ -1,20 +1,20 @@
-import 'dart:math';
-
 import 'package:sparkler/spark.dart';
-import 'package:vector_math/vector_math.dart';
+import 'package:sparkler/vector.dart';
 
 class Wind {
   const Wind(this.velocity);
-  final Vector3 velocity;
+  final Vector velocity;
 
-  factory Wind.init() => Wind(Vector3.all(0));
+  factory Wind.init() => Wind(Vector.zero());
 
-  Wind update() => Wind(Vector3(
+  Wind update() => Wind(velocity +
+      Vector(
         _createRandomVelocity(),
-        _createRandomVelocity(),
+        // _createRandomVelocity(),
+        0,
         _createRandomVelocity(),
       ));
 
   double _createRandomVelocity() =>
-      random.nextInt(100) / 100 * (random.nextBool() ? -1 : 1);
+      random.nextDouble() / 10 * (random.nextBool() ? -1 : 1);
 }

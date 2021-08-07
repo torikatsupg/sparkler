@@ -31,8 +31,6 @@ class CanvasState extends State<Canvas> with SingleTickerProviderStateMixin {
       builder: (context, child) => CustomPaint(
         painter: SparkPainter(state.particles),
         size: Size(double.infinity, double.infinity),
-        willChange: true,
-        isComplex: true,
       ),
     );
   }

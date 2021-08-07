@@ -1,5 +1,3 @@
-import 'dart:html';
-
 import 'package:sparkler/particle.dart';
 import 'package:sparkler/spark.dart';
 import 'package:sparkler/wind.dart';

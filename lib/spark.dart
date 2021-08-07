@@ -1,14 +1,15 @@
 import 'dart:math';
 
 import 'package:sparkler/particle.dart';
-import 'package:vector_math/vector_math.dart';
+import 'package:sparkler/random.dart';
+import 'package:sparkler/vector.dart';
 
 const milliSecPerFrame = 0.116;
 const particleCount = 11;
 const radiusCoefficient = (1 / 2.11) * 4 / (3 * pi);
 const div3 = 1 / 3;
-final random = Random();
-final gravity = Vector3(0, 9.8, 0);
+final random = MyRandom();
+final gravity = Vector(0, 9.8, 0);
 final initVelocity = 70;
 final forParticls = Iterable.generate((100).toInt(), (i) => i / 100);
 
@@ -29,20 +30,20 @@ class Spark {
     final initMass = random.nextInt(10) / 1500;
     return Spark(
       acceraration: gravity,
-      velocity: Vector3(
+      velocity: Vector(
         _calcInitOneDementionalVelocity(),
         _calcInitOneDementionalVelocity(),
         _calcInitOneDementionalVelocity(),
       ),
-      position: Vector3.all(0),
+      position: Vector.zero(),
       mass: initMass,
       initMass: initMass,
     );
   }
 
-  final Vector3 acceraration;
-  final Vector3 velocity;
-  final Vector3 position;
+  final Vector acceraration;
+  final Vector velocity;
+  final Vector position;
   final double duration;
   final double mass;
   final double initMass;
@@ -60,7 +61,7 @@ class Spark {
   late final double k = pow(mass, 2 / 3) as double;
 
   // 火花の動きを進める
-  Iterable<Spark> advance(Vector3 windowVelocity) {
+  Iterable<Spark> advance(Vector windowVelocity) {
     if (mass < 0.0001) {
       return [];
     }
@@ -86,8 +87,11 @@ class Spark {
         milliSecPerFrame, acceraration);
     final m1 = mass * weight;
     final m2 = mass - m1;
+    if (initMass <= 0) {
+      return [];
+    }
     final maxVelocity = initVelocity * mass ~/ initMass; // ~/で少数を丸められる
-    final v1 = Vector3(
+    final v1 = Vector(
       random.nextInt(maxVelocity).toDouble() * (random.nextBool() ? -1 : 1),
       random.nextInt(maxVelocity).toDouble() * (random.nextBool() ? -1 : 1),
       random.nextInt(maxVelocity).toDouble() * (random.nextBool() ? -1 : 1),
@@ -113,7 +117,7 @@ class Spark {
 
   // パーティクルを作成する
   // パーティクルの生成間隔は1フレームに10個 ≒ 1フレームあたりのミリ秒
-  Iterable<Particle> toParticles(Vector3 windowVelocity) =>
+  Iterable<Particle> toParticles(Vector windowVelocity) =>
       forParticls.map((e) => Particle(
           _calcPosition(
             position,
@@ -127,13 +131,13 @@ class Spark {
           1 - e));
 
   // t秒後の速度を計算する
-  Vector3 _calcVelocity(Vector3 v0, Vector3 vwind, Vector3 a, double t) =>
+  Vector _calcVelocity(Vector v0, Vector vwind, Vector a, double t) =>
       (v0 + vwind) + (a - (v0 + vwind) * k) * t;
 
   // 空気抵抗込みの移動量
   // Δ→r(t) = 1/b→v0(1-e^-bt) - 1/b^2→g{bt - (1 - e^-bt)}
-  Vector3 _calcPosition(
-      Vector3 p0, double mass, Vector3 v0, Vector3 vwind, double t, Vector3 a) {
+  Vector _calcPosition(
+      Vector p0, double mass, Vector v0, Vector vwind, double t, Vector a) {
     final powE = 1 - pow(e, -k * t) as double;
     return p0 + (v0 + vwind) * powE * 1 / k - a * (k * t - powE) / (k * k);
   }
