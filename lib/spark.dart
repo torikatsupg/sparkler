@@ -90,11 +90,11 @@ class Spark {
     if (initMass <= 0) {
       return [];
     }
-    final maxVelocity = initVelocity * mass ~/ initMass; // ~/で少数を丸められる
+    final maxVelocity = velocity * mass / initMass; // ~/で少数を丸められる
     final v1 = Vector(
-      random.nextInt(maxVelocity).toDouble() * (random.nextBool() ? -1 : 1),
-      random.nextInt(maxVelocity).toDouble() * (random.nextBool() ? -1 : 1),
-      random.nextInt(maxVelocity).toDouble() * (random.nextBool() ? -1 : 1),
+      random.nextIntAsDoubleWith(maxVelocity.x) * random.nextSign(),
+      random.nextIntAsDoubleWith(maxVelocity.y) * random.nextSign(),
+      random.nextIntAsDoubleWith(maxVelocity.z) * random.nextSign(),
     );
     final v2 = (velocity * mass - v1 * m1) / m2;
     return [
@@ -135,7 +135,7 @@ class Spark {
       (v0 + vwind) + (a - (v0 + vwind) * k) * t;
 
   // 空気抵抗込みの移動量
-  // Δ→r(t) = 1/b→v0(1-e^-bt) - 1/b^2→g{bt - (1 - e^-bt)}
+  // →r(t) = →r0 + 1/b→v0(1-e^-bt) - 1/b^2→g{bt - (1 - e^-bt)}
   Vector _calcPosition(
       Vector p0, double mass, Vector v0, Vector vwind, double t, Vector a) {
     final powE = 1 - pow(e, -k * t) as double;
