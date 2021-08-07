@@ -1,12 +1,17 @@
 import 'dart:math';
 
+import 'package:flutter/material.dart';
+import 'package:sparkler/particle.dart';
 import 'package:sparkler/spark_state.dart';
 import 'package:vector_math/vector_math.dart';
 
 const milliSecPerFrame = 0.116;
-const radiusCoefficient = 1 / 2.11 * 4 / 3 * pi;
+const particleCount = 11;
+const radiusCoefficient = (1 / 2.11) * 4 / (3 * pi);
 const div3 = 1 / 3;
 final random = Random();
+
+final forParticls = Iterable.generate((20).toInt(), (i) => i / 20);
 
 class Spark {
   Spark({
@@ -34,10 +39,11 @@ class Spark {
   // 硝酸カリウムの密度は2.11g/cm^3
   // 火花の体積=質量/2.11になる
   // 火花は球体である
-  // 球体の体積は V = 3/4πr^3より、r=
+  // 球体の体積は V = 3/4πr^3より、r= 3√{4V/(3π)}
   late final double radius = pow(mass * radiusCoefficient, div3).toDouble();
 
-  List<Spark> advance() {
+  // 火花の動きを進める
+  Iterable<Spark> advance() {
     if (mass < 0.0001) {
       return [];
     }
@@ -60,7 +66,7 @@ class Spark {
     final nextPosition =
         _calcPosition(position, velocity, acceraration, milliSecPerFrame);
     final m1 = mass * weight;
-    final maxVelocity = initVelocity * mass ~/ initMass;
+    final maxVelocity = initVelocity * mass ~/ initMass; // ~/で少数を丸められる
     if (maxVelocity <= 0) {
       return [];
     }
@@ -84,6 +90,12 @@ class Spark {
       ),
     ];
   }
+
+  // パーティクルを作成する
+  // パーティクルの生成間隔は1フレームに10個 ≒ 1フレームあたりのミリ秒
+  // TODO(torikatsu): 要調整
+  Iterable<Particle> createParticles() => forParticls.map((e) => Particle(
+      _calcPosition(position, velocity, acceraration, e), radius, 1 - e));
 
   // 速度を算出する
   Vector3 _calcVelocity(Vector3 v0, Vector3 a, double t) => Vector3(
