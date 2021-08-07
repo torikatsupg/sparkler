@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:sparkler/particle.dart';
-import 'package:sparkler/spark_state.dart';
 import 'package:vector_math/vector_math.dart';
 
 const milliSecPerFrame = 0.116;
@@ -9,8 +8,11 @@ const particleCount = 11;
 const radiusCoefficient = (1 / 2.11) * 4 / (3 * pi);
 const div3 = 1 / 3;
 final random = Random();
+final gravity = Vector3(0, 9.8, 0);
+final p0 = Vector3(100, 400, 200);
+final initVelocity = 120;
 
-final forParticls = Iterable.generate((50).toInt(), (i) => i / 50);
+final forParticls = Iterable.generate((100).toInt(), (i) => i / 100);
 
 class Spark {
   Spark({
@@ -19,12 +21,33 @@ class Spark {
     required this.position,
     this.duration = 0,
     required this.mass,
+    required this.initMass,
   });
+
+  factory Spark.create() {
+    double _calcInitOneDementionalVelocity() =>
+        (1 + random.nextInt(initVelocity)).toDouble() *
+        (random.nextBool() ? -1 : 1);
+    final initMass = random.nextInt(10) / 1500;
+    return Spark(
+      acceraration: gravity,
+      velocity: Vector3(
+        _calcInitOneDementionalVelocity(),
+        _calcInitOneDementionalVelocity(),
+        _calcInitOneDementionalVelocity(),
+      ),
+      position: Vector3.all(0),
+      mass: initMass,
+      initMass: initMass,
+    );
+  }
+
   final Vector3 acceraration;
   final Vector3 velocity;
   final Vector3 position;
   final double duration;
   final double mass;
+  final double initMass;
 
   // 線香花火の燃焼時間は40sほど
   // 線香花火の質量を0.5gとし、一定の速度で燃焼するとした時、
@@ -53,10 +76,13 @@ class Spark {
         Spark(
           acceraration: gravity,
           velocity: _calcVelocity(velocity, acceraration, milliSecPerFrame),
+          // velocity: _calcR(mass, velocity, milliSecPerFrame, acceraration),
           position:
-              _calcPosition(position, velocity, acceraration, milliSecPerFrame),
+              // _calcPosition(position, velocity, acceraration, milliSecPerFrame),
+              _calcR(mass, velocity, milliSecPerFrame, acceraration),
           duration: nextDuration,
           mass: mass,
+          initMass: initMass,
         ),
       ];
     }
@@ -80,12 +106,14 @@ class Spark {
         velocity: v1,
         position: nextPosition,
         mass: m1,
+        initMass: initMass,
       ),
       Spark(
         acceraration: gravity,
         velocity: velocity - v1,
         position: nextPosition,
         mass: mass - m1,
+        initMass: initMass,
       ),
     ];
   }
@@ -133,4 +161,12 @@ class Spark {
 
   double _caldPositionWithoutAcceralation(double p0, double v0, double t) =>
       p0 + v0 * t;
+
+  // 空気抵抗込みの移動量
+  // Δ→r(t) = 1/b→v0(1-e^-bt) - 1/b^2→g{bt - (1 - e^-bt)}
+  Vector3 _calcR(double mass, Vector3 v0, double t, Vector3 a) {
+    final k = pow(mass, 2 / 3) as double;
+    final powE = 1 - pow(e, -k * t) as double;
+    return v0 * powE * 1 / k - a * (k * t - powE) / (k * k);
+  }
 }

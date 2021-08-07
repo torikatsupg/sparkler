@@ -16,7 +16,7 @@ class SparkPainter extends CustomPainter {
             size.width / 2 + e.position.x,
             size.height / 2 + e.position.y,
           ),
-          e.radius * 5,
+          e.radius * 15,
           Paint()..color = Color.fromRGBO(195, 95, 55, e.opacity / 5)
           // ..maskFilter = MaskFilter.blur(
           //   BlurStyle.normal,
@@ -24,7 +24,11 @@ class SparkPainter extends CustomPainter {
           // ),
           ),
     );
-    // canvas.drawColor(Colors.black, BlendMode.clear);
+    canvas.drawCircle(
+      Offset(size.width / 2, size.height / 2),
+      3.5,
+      Paint()..color = Colors.redAccent,
+    );
   }
 
   @override
