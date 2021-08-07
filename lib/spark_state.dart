@@ -3,9 +3,10 @@ import 'package:sparkler/spark.dart';
 import 'package:vector_math/vector_math.dart';
 
 final gravity = Vector3(0, 9.8, 0);
-final p0 = Vector3(250, 400, 200);
-final initMass = 0.02;
-final initVelocity = 60;
+final p0 = Vector3(100, 400, 200);
+final initMass = 0.015;
+final initMinVelocity = 25;
+final initVelocity = 15;
 
 class SparkState {
   List<Spark> sparks = [];
@@ -23,17 +24,19 @@ class SparkState {
     return Spark(
       acceraration: gravity,
       velocity: Vector3(
-        random.nextInt((1 + random.nextInt(initVelocity))).toDouble() *
-            (random.nextBool() ? -1 : 1),
-        random.nextInt((1 + random.nextInt(initVelocity))).toDouble() *
-            (random.nextBool() ? -1 : 1),
-        random.nextInt((1 + random.nextInt(initVelocity))).toDouble() *
-            (random.nextBool() ? -1 : 1),
+        _calcInitOneDementionalVelocity(),
+        _calcInitOneDementionalVelocity(),
+        _calcInitOneDementionalVelocity(),
       ),
-      position: p0,
+      position: Vector3.all(0),
       mass: initMass,
     );
   }
+
+  double _calcInitOneDementionalVelocity() =>
+      (initMinVelocity +
+          random.nextInt((1 + random.nextInt(initVelocity))).toDouble()) *
+      (random.nextBool() ? -1 : 1);
 
   void update() {
     sparks = [

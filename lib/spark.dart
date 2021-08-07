@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:flutter/material.dart';
 import 'package:sparkler/particle.dart';
 import 'package:sparkler/spark_state.dart';
 import 'package:vector_math/vector_math.dart';
@@ -11,7 +10,7 @@ const radiusCoefficient = (1 / 2.11) * 4 / (3 * pi);
 const div3 = 1 / 3;
 final random = Random();
 
-final forParticls = Iterable.generate((20).toInt(), (i) => i / 20);
+final forParticls = Iterable.generate((50).toInt(), (i) => i / 50);
 
 class Spark {
   Spark({
@@ -99,19 +98,20 @@ class Spark {
 
   // 速度を算出する
   Vector3 _calcVelocity(Vector3 v0, Vector3 a, double t) => Vector3(
-        _calcVelocityOneDimentional(v0.x, a.x, t),
+        velocity.x,
         _calcVelocityOneDimentional(v0.y, a.y, t),
-        _calcVelocityOneDimentional(v0.z, a.z, t),
+        velocity.y,
       );
 
-  // 距離を算出する
+  // 距離を計算する
+  // 加速度は重力しか働かないことにするので、x, yは速度のみで計算する
   Vector3 _calcPosition(Vector3 p0, Vector3 v0, Vector3 a, double t) => Vector3(
-        _calcPositionOneDimentional(p0.x, v0.x, t, a.x),
+        _caldPositionWithoutAcceralation(p0.x, v0.x, t),
         _calcPositionOneDimentional(p0.y, v0.y, t, a.y),
-        _calcPositionOneDimentional(p0.z, v0.z, t, a.z),
+        _caldPositionWithoutAcceralation(p0.y, v0.y, t),
       );
 
-  // t秒後の速度を算出する
+  // t秒後の速度を計算する
   // 以下で求めることができる
   // v0: 初速度
   // a: 加速度
@@ -130,4 +130,7 @@ class Spark {
   double _calcPositionOneDimentional(
           double p0, double v0, double t, double a) =>
       p0 + v0 * t + 0.5 * a * t * t;
+
+  double _caldPositionWithoutAcceralation(double p0, double v0, double t) =>
+      p0 + v0 * t;
 }
