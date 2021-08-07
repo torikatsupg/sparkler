@@ -9,7 +9,7 @@ const radiusCoefficient = (1 / 2.11) * 4 / (3 * pi);
 const div3 = 1 / 3;
 final random = Random();
 final gravity = Vector3(0, -9.8, 0);
-final initVelocity = 100;
+final initVelocity = 70;
 
 final forParticls = Iterable.generate((100).toInt(), (i) => i / 100);
 
@@ -82,15 +82,14 @@ class Spark {
     final nextPosition = _calcPositionWithAirResistance(
         position, mass, velocity, milliSecPerFrame, acceraration);
     final m1 = mass * weight;
+    final m2 = mass - m1;
     final maxVelocity = initVelocity * mass ~/ initMass; // ~/で少数を丸められる
-    if (maxVelocity < 0) {
-      return [];
-    }
     final v1 = Vector3(
       random.nextInt(maxVelocity).toDouble() * (random.nextBool() ? -1 : 1),
       random.nextInt(maxVelocity).toDouble() * (random.nextBool() ? -1 : 1),
       random.nextInt(maxVelocity).toDouble() * (random.nextBool() ? -1 : 1),
     );
+    final v2 = (velocity * mass - v1 * m1) / m2;
     return [
       Spark(
         acceraration: gravity,
@@ -101,9 +100,9 @@ class Spark {
       ),
       Spark(
         acceraration: gravity,
-        velocity: velocity - v1,
+        velocity: v2,
         position: nextPosition,
-        mass: mass - m1,
+        mass: m2,
         initMass: initMass,
       ),
     ];
