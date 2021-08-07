@@ -8,9 +8,8 @@ const particleCount = 11;
 const radiusCoefficient = (1 / 2.11) * 4 / (3 * pi);
 const div3 = 1 / 3;
 final random = Random();
-final gravity = Vector3(0, -9.8, 0);
+final gravity = Vector3(0, 9.8, 0);
 final initVelocity = 70;
-
 final forParticls = Iterable.generate((100).toInt(), (i) => i / 100);
 
 class Spark {
@@ -57,8 +56,11 @@ class Spark {
   // 球体の体積は V = 3/4πr^3より、r= 3√{4V/(3π)}
   late final double radius = pow(mass * radiusCoefficient, div3).toDouble();
 
+  // 火花に発生する空気抵抗の係数
+  late final double k = pow(mass, 2 / 3) as double;
+
   // 火花の動きを進める
-  Iterable<Spark> advance() {
+  Iterable<Spark> advance(Vector3 windowVelocity) {
     if (mass < 0.0001) {
       return [];
     }
@@ -68,9 +70,10 @@ class Spark {
       return [
         Spark(
           acceraration: gravity,
-          velocity: _calcVelocity(velocity, acceraration, milliSecPerFrame),
-          position: _calcPositionWithAirResistance(
-              position, mass, velocity, milliSecPerFrame, acceraration),
+          velocity: _calcVelocity(
+              velocity, windowVelocity, acceraration, milliSecPerFrame),
+          position: _calcPosition(position, mass, velocity, windowVelocity,
+              milliSecPerFrame, acceraration),
           duration: nextDuration,
           mass: mass,
           initMass: initMass,
@@ -79,8 +82,8 @@ class Spark {
     }
 
     final weight = random.nextDouble();
-    final nextPosition = _calcPositionWithAirResistance(
-        position, mass, velocity, milliSecPerFrame, acceraration);
+    final nextPosition = _calcPosition(position, mass, velocity, windowVelocity,
+        milliSecPerFrame, acceraration);
     final m1 = mass * weight;
     final m2 = mass - m1;
     final maxVelocity = initVelocity * mass ~/ initMass; // ~/で少数を丸められる
@@ -110,34 +113,28 @@ class Spark {
 
   // パーティクルを作成する
   // パーティクルの生成間隔は1フレームに10個 ≒ 1フレームあたりのミリ秒
-  // TODO(torikatsu): 要調整
-  Iterable<Particle> createParticles() => forParticls.map(
-        (e) => Particle(
-          _calcPositionWithAirResistance(
-              position, mass, velocity, e, acceraration),
+  Iterable<Particle> toParticles(Vector3 windowVelocity) =>
+      forParticls.map((e) => Particle(
+          _calcPosition(
+            position,
+            mass,
+            _calcVelocity(velocity, windowVelocity, acceraration, e),
+            windowVelocity,
+            e,
+            acceraration,
+          ),
           radius,
-          1 - e,
-        ),
-      );
-
-  // 速度を算出する
-  Vector3 _calcVelocity(Vector3 v0, Vector3 a, double t) => Vector3(
-        velocity.x,
-        _calcVelocityOneDimentional(v0.y, a.y, t),
-        velocity.y,
-      );
+          1 - e));
 
   // t秒後の速度を計算する
-  // v = v0*+at
-  double _calcVelocityOneDimentional(double v0, double a, double t) =>
-      v0 + a * t;
+  Vector3 _calcVelocity(Vector3 v0, Vector3 vwind, Vector3 a, double t) =>
+      (v0 + vwind) + (a - (v0 + vwind) * k) * t;
 
   // 空気抵抗込みの移動量
   // Δ→r(t) = 1/b→v0(1-e^-bt) - 1/b^2→g{bt - (1 - e^-bt)}
-  Vector3 _calcPositionWithAirResistance(
-      Vector3 p0, double mass, Vector3 v0, double t, Vector3 a) {
-    final k = pow(mass, 2 / 3) as double;
+  Vector3 _calcPosition(
+      Vector3 p0, double mass, Vector3 v0, Vector3 vwind, double t, Vector3 a) {
     final powE = 1 - pow(e, -k * t) as double;
-    return p0 + v0 * powE * 1 / k - a * (k * t - powE) / (k * k);
+    return p0 + (v0 + vwind) * powE * 1 / k - a * (k * t - powE) / (k * k);
   }
 }

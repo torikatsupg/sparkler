@@ -1,10 +1,15 @@
+import 'dart:html';
+
 import 'package:sparkler/particle.dart';
 import 'package:sparkler/spark.dart';
+import 'package:sparkler/wind.dart';
 
 class SparkState {
   List<Spark> sparks = [];
 
   Iterable<Particle> particles = [];
+
+  Wind wind = Wind.init();
 
   void init() {
     sparks = [
@@ -15,9 +20,11 @@ class SparkState {
 
   void update() {
     sparks = [
-      ...sparks.map((e) => e.advance()).expand((e) => e),
+      ...sparks.map((e) => e.advance(wind.velocity)).expand((e) => e),
       if (random.nextDouble() > 0.8) Spark.create(),
     ];
-    particles = sparks.map((e) => e.createParticles()).expand((e) => e);
+    particles =
+        sparks.map((e) => e.toParticles(wind.velocity)).expand((e) => e);
+    wind = wind.update();
   }
 }
