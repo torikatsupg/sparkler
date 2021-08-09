@@ -3,54 +3,8 @@ import 'dart:math';
 import 'package:sparkler/util/random.dart';
 import 'package:sparkler/model/vector.dart';
 
-// ランダム
-final random = MyRandom();
-// 重力加速度(kg/s^2)
-final _gravityAcceralation = Vector(0, 9.8, 0);
-// 1ミリ秒(s)
-const _1milliSeconds = 0.001;
-// 1ミリ秒の二乗値のキャッシュ
-final _squared1MilliSeconds = pow(_1milliSeconds, 2);
-
-// カリウム化合物の密度は10^3 kg/m^3
-final _potassiumDensity = pow(10, 3);
-// 火球の表面張力は10^-1 N/m
-final _surfaceTensionOfFireball = pow(10, -1);
-// 火球の半径は R0 = (σ*s/ρ*g)^1/3 = 10^-3 m
-final _radiusOfFireball = pow(10, -3);
-// カリウム化合物の熱拡散率はk=10^-1 m^2/s
-final _thermalDiffusivity = pow(10, -1);
-// 分裂時の液滴の半径の係数
-const _divisionCoefficient = 0.5;
-// 分裂カウンタ 分裂回数は1~8回分裂した後のやつを計算するので、分裂前の値でカウンタをつくる
-const _divisionCounter = [0, 1, 2, 3, 4, 5, 6, 7];
-// 最大分裂回数8回
-const _maxDivisionCount = 8;
-// 分裂回数ごとの液滴の半径を求める式(m)
-double _calcRadius(int n) =>
-    pow(_divisionCoefficient, n) * _radiusOfFireball as double;
-// 分裂回数ごとの寿命を求める式(s)
-double _calcLifitime(int n) =>
-    pow(_radiusOfFireball, 2) /
-    _thermalDiffusivity *
-    pow(_divisionCoefficient, 2 * n);
-// 分裂回数ごとの液滴の初速を求める式(m/s)
-double _calcInitialVelocity(int n) =>
-    sqrt(_surfaceTensionOfFireball / (_potassiumDensity * _radiusOfFireball)) *
-    pow(_divisionCoefficient, -(n - 1) / 2);
-// 分裂回数ごとの液滴の初速の二乗値
-double _calcSquaredInitialVelocity(int n) =>
-    pow(_calcInitialVelocity(n), 2) as double;
-
-// 分裂回数ごとの液滴の半径
-final _radius = _divisionCounter.map(_calcRadius);
-// 分裂回数ごとの液滴の寿命
-final _lifetime = _divisionCounter.map(_calcLifitime);
-// 分裂回数ごとの液滴の初速
-final _squaredInitialVelocity =
-    _divisionCounter.map(_calcSquaredInitialVelocity);
-
 class Spark {
+  // コンストラクタ
   Spark({
     required this.divisionCount,
     required this.velocity,
@@ -58,6 +12,15 @@ class Spark {
     required this.position,
     required this.elapsedTime,
   });
+
+  // 液滴の作成
+  factory Spark.init() => Spark(
+        divisionCount: random.nextInt(8),
+        velocity: Spark._calcRandomVelocityWith(0),
+        accerelation: _gravityAcceralation,
+        position: Vector.zero,
+        elapsedTime: 0,
+      );
 
   // 分裂回数
   final int divisionCount;
@@ -71,9 +34,9 @@ class Spark {
   final double elapsedTime;
 
   // 液滴の半径(m)
-  late final double radius = _radius.elementAt(divisionCount);
+  late final double radius = _radii[divisionCount];
   // 液滴の寿命(s)
-  late final double lifetime = _lifetime.elementAt(divisionCount);
+  late final double lifetime = _lifetimes[divisionCount];
 
   // 液滴の動きを進める
   Iterable<Spark> advance() {
@@ -120,8 +83,10 @@ class Spark {
   ];
 
   // 液滴分裂時の液滴に対する相対初速度
-  late final Vector _relativeVelocity1 = () {
-    final squaredVelocityAbs = _squaredInitialVelocity.elementAt(divisionCount);
+  late final Vector _relativeVelocity1 = _calcRandomVelocityWith(divisionCount);
+
+  static Vector _calcRandomVelocityWith(int divisionCount) {
+    final squaredVelocityAbs = _squaredInitialVelocities[divisionCount];
     final xSquared = squaredVelocityAbs * random.nextDouble();
     final ySquared = (squaredVelocityAbs - xSquared) * random.nextDouble();
     final zSquared = squaredVelocityAbs - xSquared - ySquared;
@@ -130,7 +95,7 @@ class Spark {
       sqrt(ySquared),
       sqrt(zSquared),
     );
-  }();
+  }
 
   // 液滴分裂時の液滴に対する相対処速度2
   // 運動量保存より、2m0=mv1+mv2 => v1=-v2
@@ -150,3 +115,50 @@ class Spark {
   double _calcPositionChanges(double p0, double a) =>
       p0 * _1milliSeconds + 0.5 * a * _squared1MilliSeconds;
 }
+
+// ランダム
+final random = MyRandom();
+// 重力加速度(kg/s^2)
+final _gravityAcceralation = Vector(0, 9.8, 0);
+// 1ミリ秒(s)
+const _1milliSeconds = 0.001;
+// 1ミリ秒の二乗値のキャッシュ
+final _squared1MilliSeconds = pow(_1milliSeconds, 2);
+
+// カリウム化合物の密度は10^3 kg/m^3
+final _potassiumDensity = pow(10, 3);
+// 火球の表面張力は10^-1 N/m
+final _surfaceTensionOfFireball = pow(10, -1);
+// 火球の半径は R0 = (σ*s/ρ*g)^1/3 = 10^-3 m
+final _radiusOfFireball = pow(10, -3);
+// カリウム化合物の熱拡散率はk=10^-1 m^2/s
+final _thermalDiffusivity = pow(10, -1);
+// 分裂時の液滴の半径の係数
+const _divisionCoefficient = 0.5;
+// 分裂カウンタ 分裂回数は1~8回分裂した後のやつを計算するので、分裂前の値でカウンタをつくる
+const _divisionCounter = [0, 1, 2, 3, 4, 5, 6, 7];
+// 最大分裂回数8回
+const _maxDivisionCount = 8;
+// 分裂回数ごとの液滴の半径を求める式(m)
+double _calcRadius(int n) =>
+    pow(_divisionCoefficient, n) * _radiusOfFireball as double;
+// 分裂回数ごとの寿命を求める式(s)
+double _calcLifitime(int n) =>
+    pow(_radiusOfFireball, 2) /
+    _thermalDiffusivity *
+    pow(_divisionCoefficient, 2 * n);
+// 分裂回数ごとの液滴の初速を求める式(m/s)
+double _calcInitialVelocity(int n) =>
+    sqrt(_surfaceTensionOfFireball / (_potassiumDensity * _radiusOfFireball)) *
+    pow(_divisionCoefficient, -(n - 1) / 2);
+// 分裂回数ごとの液滴の初速の二乗値
+double _calcSquaredInitialVelocity(int n) =>
+    pow(_calcInitialVelocity(n), 2) as double;
+
+// 分裂回数ごとの液滴の半径
+final _radii = _divisionCounter.map(_calcRadius).toList();
+// 分裂回数ごとの液滴の寿命
+final _lifetimes = _divisionCounter.map(_calcLifitime).toList();
+// 分裂回数ごとの液滴の初速の二乗値
+final _squaredInitialVelocities =
+    _divisionCounter.map(_calcSquaredInitialVelocity).toList();
