@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:sparkler/model/particle.dart';
 import 'package:sparkler/util/random.dart';
 import 'package:sparkler/model/vector.dart';
 
@@ -14,9 +15,9 @@ class Spark {
   });
 
   // 液滴の作成
-  factory Spark.init() => Spark(
+  factory Spark.init(Vector windVelocity) => Spark(
         divisionCount: random.nextInt(8),
-        velocity: Spark._calcRandomVelocityWith(0),
+        velocity: Spark._calcRandomVelocityWith(0) + windVelocity,
         accerelation: _gravityAcceralation,
         position: Vector.zero,
         elapsedTime: 0,
@@ -33,54 +34,60 @@ class Spark {
   // 液滴が生成されてから経過した時間(s)
   final double elapsedTime;
 
-  // 液滴の半径(m)
-  late final double radius = _radii[divisionCount];
+  // 液滴の直径
+  late final double _deameter = _deameters[divisionCount];
   // 液滴の寿命(s)
   late final double lifetime = _lifetimes[divisionCount];
 
-  // 液滴の動きを進める
-  Iterable<Spark> advance() {
+  // 液滴の動きを1ミリ秒進める
+  Iterable<Spark> advance(Vector windVelocity) {
+    // 風速の影響は次のadvanceで反映される
     if (_isEndLifetime) {
       // 寿命が尽きていたら分裂か消滅する
-      return _canDivide ? _dividedSparks : [];
+      if (_canDivide) {
+        return [
+          Spark(
+            divisionCount: divisionCount + 1,
+            velocity:
+                velocity + _relativeVelocity1 + windVelocity + _velocityChanges,
+            accerelation: accerelation,
+            position: position + _positionChanges,
+            elapsedTime: 0,
+          ),
+          Spark(
+            divisionCount: divisionCount + 1,
+            velocity:
+                velocity + _relativeVelocity2 + windVelocity + _velocityChanges,
+            accerelation: accerelation,
+            position: position + _positionChanges,
+            elapsedTime: 0,
+          ),
+        ];
+      } else {
+        return [];
+      }
     } else {
       // 寿命が尽きていなければ移動する
-      return [_nextSpark];
+      return [
+        Spark(
+          divisionCount: divisionCount,
+          velocity: velocity + _velocityChanges + windVelocity,
+          accerelation: accerelation,
+          elapsedTime: elapsedTime + _1milliSeconds,
+          position: position + _positionChanges,
+        )
+      ];
     }
   }
+
+  // パーティクルを生成する
+  Particle toParticle() => Particle(position, _deameter);
 
   // ============== private ==================
   // 液滴が分裂可能か
   late final _canDivide = divisionCount < _maxDivisionCount;
   // 液滴の寿命が尽きていないか
   late final _isEndLifetime = lifetime < elapsedTime;
-
-  // 1ミリ秒後の液滴
-  late final Spark _nextSpark = Spark(
-    divisionCount: divisionCount,
-    velocity: velocity + _velocityChanges,
-    accerelation: accerelation,
-    elapsedTime: elapsedTime + _1milliSeconds,
-    position: position + _positionChanges,
-  );
-
-  // 分裂後の液滴
-  late final Iterable<Spark> _dividedSparks = [
-    Spark(
-      divisionCount: divisionCount + 1,
-      velocity: velocity + _relativeVelocity1 + _velocityChanges,
-      accerelation: accerelation,
-      position: position + _positionChanges,
-      elapsedTime: 0,
-    ),
-    Spark(
-      divisionCount: divisionCount + 1,
-      velocity: velocity + _relativeVelocity2 + _velocityChanges,
-      accerelation: accerelation,
-      position: position + _positionChanges,
-      elapsedTime: 0,
-    ),
-  ];
 
   // 液滴分裂時の液滴に対する相対初速度
   late final Vector _relativeVelocity1 = _calcRandomVelocityWith(divisionCount);
@@ -106,14 +113,14 @@ class Spark {
 
   // 1millisec後の位置の変化量
   late final Vector _positionChanges = Vector(
-    _calcPositionChanges(position.x, accerelation.x),
-    _calcPositionChanges(position.y, accerelation.z),
-    _calcPositionChanges(position.z, accerelation.z),
+    _calcPositionChanges(velocity.x, accerelation.x),
+    _calcPositionChanges(velocity.y, accerelation.z),
+    _calcPositionChanges(velocity.z, accerelation.z),
   );
 
   // 位置の変化量を計算する r = r0*t + 1/2at^2
-  double _calcPositionChanges(double p0, double a) =>
-      p0 * _1milliSeconds + 0.5 * a * _squared1MilliSeconds;
+  double _calcPositionChanges(double v0, double a) =>
+      v0 * _1milliSeconds + 0.5 * a * _squared1MilliSeconds;
 }
 
 // ランダム
@@ -136,7 +143,7 @@ final _thermalDiffusivity = pow(10, -1);
 // 分裂時の液滴の半径の係数
 const _divisionCoefficient = 0.5;
 // 分裂カウンタ 分裂回数は1~8回分裂した後のやつを計算するので、分裂前の値でカウンタをつくる
-const _divisionCounter = [0, 1, 2, 3, 4, 5, 6, 7];
+const _divisionCounter = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 // 最大分裂回数8回
 const _maxDivisionCount = 8;
 // 分裂回数ごとの液滴の半径を求める式(m)
@@ -157,6 +164,13 @@ double _calcSquaredInitialVelocity(int n) =>
 
 // 分裂回数ごとの液滴の半径
 final _radii = _divisionCounter.map(_calcRadius).toList();
+// 分裂回数ごとの直径の半径
+final _deameters = () {
+  final a = _radii.map((e) => e * 2).toList();
+  a[0] = 0.0005;
+  a[1] = 0.0005;
+  return a;
+}();
 // 分裂回数ごとの液滴の寿命
 final _lifetimes = _divisionCounter.map(_calcLifitime).toList();
 // 分裂回数ごとの液滴の初速の二乗値

@@ -10,24 +10,15 @@ class CanvasPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height),
         Paint()..color = Colors.black);
-    particles.forEach(
-      (e) {
-        canvas.drawCircle(
-            Offset(
-              size.width / 2 + e.position.x,
-              size.height / 2 + e.position.y,
-            ),
-            e.deameter * 10,
-            Paint()..color = Color.fromRGBO(255, 255, 150, e.opacity)
-            // ..maskFilter = MaskFilter.blur(
-            //   BlurStyle.normal,
-            //   e.position.z / 10,
-            // ),
-            );
-      },
-    );
-    canvas.drawCircle(Offset(size.width / 2, size.height / 2), 1,
-        Paint()..color = Color.fromRGBO(255, 150, 150, 0.9));
+    final centerX = size.width / 2;
+    final centerY = size.height / 2;
+    final draw = (Particle e) => canvas.drawCircle(
+        Offset(centerX + e.position.x, centerY + e.position.y),
+        e.deameter,
+        Paint()..color = Particle.color);
+    particles.forEach(draw);
+    // canvas.drawCircle(Offset(size.width / 2, size.height / 2), 1,
+    //     Paint()..color = Color.fromRGBO(255, 150, 150, 0.9));
   }
 
   @override

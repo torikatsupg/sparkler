@@ -14,5 +14,5 @@ class Wind {
           .maxByAbs(windMaxVelocity));
 
   double _createRandomVelocity() =>
-      random.nextDouble() / 100 * (random.nextBool() ? -1 : 1);
+      random.nextDouble() / 100000 * (random.nextBool() ? -1 : 1);
 }

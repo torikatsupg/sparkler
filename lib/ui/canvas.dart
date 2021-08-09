@@ -17,22 +17,23 @@ class CanvasState extends State<Canvas> with SingleTickerProviderStateMixin {
     controller = AnimationController(
       vsync: this,
       duration: Duration(days: 1),
-    )
-      ..addListener(state.update)
-      ..forward();
+    )..forward();
     super.initState();
     state.init();
   }
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: controller,
-      builder: (context, child) => CustomPaint(
-        painter: CanvasPainter(state.particles),
-        size: Size(double.infinity, double.infinity),
-        isComplex: true,
-        willChange: true,
+    return Transform.scale(
+      scale: 12000,
+      child: AnimatedBuilder(
+        animation: controller,
+        builder: (context, child) => CustomPaint(
+          painter: CanvasPainter(state.particles),
+          size: Size(double.infinity, double.infinity),
+          isComplex: true,
+          willChange: true,
+        ),
       ),
     );
   }
