@@ -17,8 +17,8 @@ class CanvasPainter extends CustomPainter {
               size.width / 2 + e.position.x,
               size.height / 2 + e.position.y,
             ),
-            e.radius * 15,
-            Paint()..color = Color.fromRGBO(255, 255, 150, e.opacity / 5)
+            e.deameter * 10,
+            Paint()..color = Color.fromRGBO(255, 255, 150, e.opacity)
             // ..maskFilter = MaskFilter.blur(
             //   BlurStyle.normal,
             //   e.position.z / 10,
@@ -26,7 +26,7 @@ class CanvasPainter extends CustomPainter {
             );
       },
     );
-    canvas.drawCircle(Offset(size.width / 2, size.height / 2), 3.5,
+    canvas.drawCircle(Offset(size.width / 2, size.height / 2), 1,
         Paint()..color = Color.fromRGBO(255, 150, 150, 0.9));
   }
 

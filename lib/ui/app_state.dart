@@ -19,7 +19,7 @@ class AppState {
   void update() {
     sparks = [
       ...sparks.map((e) => e.advance(wind.velocity)).expand((e) => e),
-      if (random.nextDouble() > 0.6) Spark.create(),
+      if (random.nextDouble() > 0.9) Spark.create(),
     ];
     particles =
         sparks.map((e) => e.toParticles(wind.velocity)).expand((e) => e);
