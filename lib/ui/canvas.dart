@@ -10,7 +10,7 @@ class Canvas extends StatefulWidget {
 
 class CanvasState extends State<Canvas> with SingleTickerProviderStateMixin {
   late final AnimationController controller;
-  final state = AppState();
+  final state = AppState()..init();
 
   @override
   void initState() {
@@ -20,6 +20,7 @@ class CanvasState extends State<Canvas> with SingleTickerProviderStateMixin {
     )..forward();
     super.initState();
     state.init();
+    invokeIsolate(state.sendPort);
   }
 
   @override
