@@ -6,7 +6,7 @@ import 'package:sparkler/model/spark.dart';
 import 'package:sparkler/model/wind.dart';
 
 const _sparkGenerateWeight = 0.985;
-const _milliSecondsPerFrame = 17;
+const _milliSecondsPerFrame = 17 * 2;
 
 class ParticleGenerator {
   ParticleGenerator(this.port);

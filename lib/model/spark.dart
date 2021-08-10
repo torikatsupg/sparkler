@@ -16,14 +16,17 @@ class Spark {
   });
 
   // 液滴の作成
-  factory Spark.init(Vector windVelocity) => Spark(
-        divisionCount: random.nextInt(8),
-        velocity: Spark._calcRandomVelocityWith(0) + windVelocity,
-        accerelation: _gravityAcceralation,
-        position: Vector.zero,
-        prevPosition: Vector.zero,
-        elapsedTime: 0,
-      );
+  factory Spark.init(Vector windVelocity) {
+    final divisionCount = random.nextInt(8);
+    return Spark(
+      divisionCount: divisionCount,
+      velocity: Spark._calcRandomVelocityWith(divisionCount) + windVelocity,
+      accerelation: _gravityAcceralation,
+      position: Vector.zero,
+      prevPosition: Vector.zero,
+      elapsedTime: 0,
+    );
+  }
 
   // 分裂回数
   final int divisionCount;
@@ -37,6 +40,9 @@ class Spark {
   final Vector prevPosition;
   // 液滴が生成されてから経過した時間(s)
   final double elapsedTime;
+
+  // 1ミリ秒後の経過時間
+  late final double _nextElapsedTime = elapsedTime + _1milliSeconds;
 
   // 液滴の直径
   late final double _deameter = _deameters[divisionCount];
@@ -81,7 +87,7 @@ class Spark {
           accerelation: accerelation,
           position: position + _positionChanges,
           prevPosition: position,
-          elapsedTime: elapsedTime + _1milliSeconds,
+          elapsedTime: _nextElapsedTime,
         )
       ];
     }
@@ -89,11 +95,12 @@ class Spark {
 
   // パーティクルを生成する
   Particle toParticle() => Particle(
-      position: position,
-      prevPosition: prevPosition,
-      deameter: _deameter,
-      lifetime: lifetime,
-      elapsedTime: elapsedTime);
+        position: position,
+        prevPosition: prevPosition,
+        deameter: _deameter,
+        lifetime: lifetime,
+        elapsedTime: elapsedTime,
+      );
 
   // ============== private ==================
   // 液滴が分裂可能か
@@ -110,9 +117,9 @@ class Spark {
     final ySquared = (squaredVelocityAbs - xSquared) * random.nextDouble();
     final zSquared = squaredVelocityAbs - xSquared - ySquared;
     return Vector(
-      sqrt(xSquared),
-      sqrt(ySquared),
-      sqrt(zSquared),
+      sqrt(xSquared) * random.nextSign(),
+      sqrt(ySquared) * random.nextSign(),
+      sqrt(zSquared) * random.nextSign(),
     );
   }
 

@@ -17,6 +17,9 @@ class Particle {
   final double lifetime;
   final double elapsedTime;
 
-  late final Color color =
-      Color.fromRGBO(255, 95, 45, max(elapsedTime / lifetime, 0.15));
+  late final Color color = () {
+    final a = elapsedTime / lifetime;
+    final opacity = max(a, 0.15);
+    return Color.fromRGBO(255, 95, 45, opacity);
+  }();
 }
