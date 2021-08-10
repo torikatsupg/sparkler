@@ -25,7 +25,7 @@ class CanvasState extends State<Canvas> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Transform.scale(
-      scale: 12000,
+      scale: 400,
       child: AnimatedBuilder(
         animation: controller,
         builder: (context, child) => CustomPaint(

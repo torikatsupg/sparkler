@@ -11,6 +11,7 @@ class Spark {
     required this.velocity,
     required this.accerelation,
     required this.position,
+    required this.prevPosition,
     required this.elapsedTime,
   });
 
@@ -20,6 +21,7 @@ class Spark {
         velocity: Spark._calcRandomVelocityWith(0) + windVelocity,
         accerelation: _gravityAcceralation,
         position: Vector.zero,
+        prevPosition: Vector.zero,
         elapsedTime: 0,
       );
 
@@ -31,6 +33,8 @@ class Spark {
   final Vector accerelation;
   // 位置
   final Vector position;
+  // 直前の位置
+  final Vector prevPosition;
   // 液滴が生成されてから経過した時間(s)
   final double elapsedTime;
 
@@ -52,6 +56,7 @@ class Spark {
                 velocity + _relativeVelocity1 + windVelocity + _velocityChanges,
             accerelation: accerelation,
             position: position + _positionChanges,
+            prevPosition: position,
             elapsedTime: 0,
           ),
           Spark(
@@ -60,6 +65,7 @@ class Spark {
                 velocity + _relativeVelocity2 + windVelocity + _velocityChanges,
             accerelation: accerelation,
             position: position + _positionChanges,
+            prevPosition: position,
             elapsedTime: 0,
           ),
         ];
@@ -73,15 +79,21 @@ class Spark {
           divisionCount: divisionCount,
           velocity: velocity + _velocityChanges + windVelocity,
           accerelation: accerelation,
-          elapsedTime: elapsedTime + _1milliSeconds,
           position: position + _positionChanges,
+          prevPosition: position,
+          elapsedTime: elapsedTime + _1milliSeconds,
         )
       ];
     }
   }
 
   // パーティクルを生成する
-  Particle toParticle() => Particle(position, _deameter);
+  Particle toParticle() => Particle(
+      position: position,
+      prevPosition: prevPosition,
+      deameter: _deameter,
+      lifetime: lifetime,
+      elapsedTime: elapsedTime);
 
   // ============== private ==================
   // 液滴が分裂可能か
@@ -128,7 +140,7 @@ final random = MyRandom();
 // 重力加速度(kg/s^2)
 final _gravityAcceralation = Vector(0, 9.8, 0);
 // 1ミリ秒(s)
-const _1milliSeconds = 0.001;
+const _1milliSeconds = 0.01;
 // 1ミリ秒の二乗値のキャッシュ
 final _squared1MilliSeconds = pow(_1milliSeconds, 2);
 
@@ -165,12 +177,7 @@ double _calcSquaredInitialVelocity(int n) =>
 // 分裂回数ごとの液滴の半径
 final _radii = _divisionCounter.map(_calcRadius).toList();
 // 分裂回数ごとの直径の半径
-final _deameters = () {
-  final a = _radii.map((e) => e * 2).toList();
-  a[0] = 0.0005;
-  a[1] = 0.0005;
-  return a;
-}();
+final _deameters = _radii.map((e) => e * 2).toList();
 // 分裂回数ごとの液滴の寿命
 final _lifetimes = _divisionCounter.map(_calcLifitime).toList();
 // 分裂回数ごとの液滴の初速の二乗値

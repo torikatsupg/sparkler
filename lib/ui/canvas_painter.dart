@@ -12,10 +12,17 @@ class CanvasPainter extends CustomPainter {
         Paint()..color = Colors.black);
     final centerX = size.width / 2;
     final centerY = size.height / 2;
-    final draw = (Particle e) => canvas.drawCircle(
-        Offset(centerX + e.position.x, centerY + e.position.y),
-        e.deameter,
-        Paint()..color = Particle.color);
+    // final draw = (Particle e) => canvas.drawCircle(
+    //       Offset(centerX + e.position.x, centerY + e.position.y),
+    //       e.deameter,
+    //       Paint()..color = Particle.color,
+    //     );
+    final draw = (Particle e) => canvas.drawLine(
+          Offset(centerX + e.prevPosition.x, centerY + e.prevPosition.y),
+          Offset(centerX + e.position.x, centerY + e.position.y),
+          Paint()..color = e.color,
+        );
+
     particles.forEach(draw);
     // canvas.drawCircle(Offset(size.width / 2, size.height / 2), 1,
     //     Paint()..color = Color.fromRGBO(255, 150, 150, 0.9));

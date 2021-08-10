@@ -5,14 +5,14 @@ import 'package:sparkler/model/spark.dart';
 import 'package:sparkler/model/wind.dart';
 
 const _sparkGenerateWeight = 0.9;
-const _milliSecondsPerFrame = 17 * 2;
+const _milliSecondsPerFrame = 17 / 2;
 
 class AppState {
   Iterable<Spark> sparks = [];
   List<Particle> particles = [];
   Wind wind = Wind.init();
 
-  void init() => Timer.periodic(Duration(milliseconds: 17), _update);
+  void init() => Timer.periodic(Duration(microseconds: 500), _update);
 
   void _update(Timer timestamp) {
     // カウンターが1F進んだらリセットする
