@@ -98,8 +98,6 @@ class Spark {
         position: position,
         prevPosition: prevPosition,
         deameter: _deameter,
-        lifetime: lifetime,
-        elapsedTime: elapsedTime,
       );
 
   // ============== private ==================
@@ -113,13 +111,11 @@ class Spark {
 
   static Vector _calcRandomVelocityWith(int divisionCount) {
     final squaredVelocityAbs = _squaredInitialVelocities[divisionCount];
-    final xSquared = squaredVelocityAbs * random.nextDouble();
-    final ySquared = (squaredVelocityAbs - xSquared) * random.nextDouble();
-    final zSquared = squaredVelocityAbs - xSquared - ySquared;
+    final splitedVelocity = random.splitValue(squaredVelocityAbs);
     return Vector(
-      sqrt(xSquared) * random.nextSign(),
-      sqrt(ySquared) * random.nextSign(),
-      sqrt(zSquared) * random.nextSign(),
+      sqrt(splitedVelocity.x) * random.nextSign() * 1.5,
+      sqrt(splitedVelocity.y) * random.nextSign() * 1.5,
+      sqrt(splitedVelocity.z) * random.nextSign() * 1.5,
     );
   }
 
@@ -137,20 +133,24 @@ class Spark {
     _calcPositionChanges(velocity.z, accerelation.z),
   );
 
-  // 位置の変化量を計算する r = r0*t + 1/2at^2
+  // 位置の変化量を計算する
   double _calcPositionChanges(double v0, double a) =>
-      v0 * _1milliSeconds + 0.5 * a * _squared1MilliSeconds;
+      -1 *
+      _massDivK[divisionCount] *
+      ((v0 - a * _massDivK[divisionCount]) *
+              pow(e, -1 / _massDivK[divisionCount] * _1milliSeconds) +
+          a * _1milliSeconds +
+          v0 -
+          a * _massDivK[divisionCount]) *
+      6;
 }
 
 // ランダム
 final random = MyRandom();
-// 重力加速度(kg/s^2)
-final _gravityAcceralation = Vector(0, 9.8, 0);
+// 重力加速度(kg/s^2) なぜか負の値にしないとうまくいかない
+final _gravityAcceralation = Vector(0, -9.8, 0);
 // 1ミリ秒(s)
 const _1milliSeconds = 0.01;
-// 1ミリ秒の二乗値のキャッシュ
-final _squared1MilliSeconds = pow(_1milliSeconds, 2);
-
 // カリウム化合物の密度は10^3 kg/m^3
 final _potassiumDensity = pow(10, 3);
 // 火球の表面張力は10^-1 N/m
@@ -180,7 +180,6 @@ double _calcInitialVelocity(int n) =>
 // 分裂回数ごとの液滴の初速の二乗値
 double _calcSquaredInitialVelocity(int n) =>
     pow(_calcInitialVelocity(n), 2) as double;
-
 // 分裂回数ごとの液滴の半径
 final _radii = _divisionCounter.map(_calcRadius).toList();
 // 分裂回数ごとの直径の半径
@@ -190,3 +189,11 @@ final _lifetimes = _divisionCounter.map(_calcLifitime).toList();
 // 分裂回数ごとの液滴の初速の二乗値
 final _squaredInitialVelocities =
     _divisionCounter.map(_calcSquaredInitialVelocity).toList();
+// 分裂回数ごとの質量
+// 分裂回数ごとに半径がわかり、カリウム化合物の密度はわかっているので分裂回数ごとの質量が求められる
+final _masses =
+    _radii.map((r) => 4 / 3 * pi * pow(r, 3) * _potassiumDensity).toList();
+// 位置の計算に使う値のキャッシュ
+// 空気抵抗係数kは質量の2/3乗とする
+// m / kのキャッシュ
+final _massDivK = _masses.map((m) => m / pow(m, 2 / 3)).toList();

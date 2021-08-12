@@ -5,8 +5,8 @@ import 'package:sparkler/model/particle.dart';
 import 'package:sparkler/model/spark.dart';
 import 'package:sparkler/model/wind.dart';
 
-const _sparkGenerateWeight = 0.985;
-const _milliSecondsPerFrame = 17 * 2;
+const _sparkGenerateWeight = 0.9;
+const _milliSecondsPerFrame = 17;
 
 class ParticleGenerator {
   ParticleGenerator(this.port);
@@ -19,7 +19,7 @@ class ParticleGenerator {
 
   void _update(Timer timestamp) {
     // カウンターが1F進んだらリセットする
-    if (timestamp.tick % _milliSecondsPerFrame == 0) {
+    if (timestamp.tick % _milliSecondsPerFrame == 15) {
       port.send(particles);
       particles.clear();
     }

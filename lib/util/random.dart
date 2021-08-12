@@ -1,5 +1,8 @@
 import 'dart:math';
 
+import 'package:sparkler/model/spark.dart';
+import 'package:sparkler/model/vector.dart';
+
 class MyRandom {
   static final _random = Random();
 
@@ -22,4 +25,17 @@ class MyRandom {
 
   // 正負をランダムに返す
   int nextSign() => _random.nextBool() ? -1 : 1;
+
+  // 値をランダムに3分割する(符号もランダム)
+  Vector splitValue(double value) {
+    final a = random.nextDouble();
+    final b = random.nextDouble();
+    final c = random.nextDouble();
+    final total = a + b + c;
+    return Vector(
+      value * a / total,
+      value * b / total,
+      value * c / total,
+    );
+  }
 }
