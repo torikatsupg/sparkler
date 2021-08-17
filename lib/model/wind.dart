@@ -1,7 +1,7 @@
 import 'package:sparkler/model/spark.dart';
 import 'package:sparkler/model/vector.dart';
 
-final windMaxVelocity = Vector.all(1.5);
+final windMaxVelocity = Vector.all(0.1);
 
 class Wind {
   const Wind(this.velocity);
@@ -9,10 +9,14 @@ class Wind {
 
   factory Wind.init() => Wind(Vector.zero);
 
-  Wind update() => Wind(
-      (velocity + Vector(_createRandomVelocity(), 0, _createRandomVelocity()))
-          .maxByAbs(windMaxVelocity));
+  Wind update() => Wind((velocity +
+          Vector(
+            _createRandomVelocity(),
+            _createRandomVelocity(),
+            _createRandomVelocity(),
+          ))
+      .maxByAbs(windMaxVelocity));
 
   double _createRandomVelocity() =>
-      random.nextDouble() / 100000 * (random.nextBool() ? -1 : 1);
+      random.nextDouble() / 1000 * random.nextSign();
 }
