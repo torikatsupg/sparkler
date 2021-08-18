@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:sparkler/ui/canvas_painter.dart';
 import 'package:sparkler/ui/app_state.dart';
@@ -25,17 +27,37 @@ class CanvasState extends State<Canvas> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Transform.scale(
-      scale: 400,
-      child: AnimatedBuilder(
-        animation: controller,
-        builder: (context, child) => CustomPaint(
-          painter: CanvasPainter(state.particles),
-          size: Size(double.infinity, double.infinity),
-          isComplex: true,
-          willChange: true,
+    return Stack(
+      children: [
+        SizedBox.expand(
+          child: Image.asset(
+            'assets/background.jpg',
+            fit: BoxFit.fitHeight,
+          ),
         ),
-      ),
+        BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+          child: SizedBox.expand(
+            child: ColoredBox(
+              color: Color.fromRGBO(0, 0, 0, 0.8),
+            ),
+          ),
+        ),
+        Center(
+          child: Transform.scale(
+            scale: 400,
+            child: AnimatedBuilder(
+              animation: controller,
+              builder: (context, child) => CustomPaint(
+                painter: CanvasPainter(state.particles),
+                size: Size(double.infinity, double.infinity),
+                isComplex: true,
+                willChange: true,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

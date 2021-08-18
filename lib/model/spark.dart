@@ -17,7 +17,7 @@ class Spark {
 
   // 液滴の作成
   factory Spark.init(Vector windVelocity) {
-    final divisionCount = random.nextInt(8);
+    final divisionCount = random.nextInt(4);
     return Spark(
       divisionCount: divisionCount,
       velocity: Spark._calcRandomVelocityWith(divisionCount) + windVelocity,
@@ -55,11 +55,12 @@ class Spark {
     if (_isEndLifetime) {
       // 寿命が尽きていたら分裂か消滅する
       if (_canDivide) {
+        // 運動量保存より v0 + windVelocity = v1 + v2 v1はランダムにして、v2 = v0+vwind-v1
+        final velocity2 = (velocity + windVelocity) - _relativeVelocity1;
         return [
           Spark(
             divisionCount: divisionCount + 1,
-            velocity:
-                velocity + _relativeVelocity1 + windVelocity + _velocityChanges,
+            velocity: _relativeVelocity1,
             accerelation: accerelation,
             position: position + _positionChanges,
             prevPosition: position,
@@ -67,8 +68,7 @@ class Spark {
           ),
           Spark(
             divisionCount: divisionCount + 1,
-            velocity:
-                velocity + _relativeVelocity2 + windVelocity + _velocityChanges,
+            velocity: velocity2,
             accerelation: accerelation,
             position: position + _positionChanges,
             prevPosition: position,

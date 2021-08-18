@@ -5,8 +5,10 @@ import 'package:sparkler/model/particle.dart';
 import 'package:sparkler/model/spark.dart';
 import 'package:sparkler/model/wind.dart';
 
-const _sparkGenerateWeight = 0.9;
-const _milliSecondsPerFrame = 17;
+const _sparkGenerateWeight = 0.93;
+const _milliSecondsPerFrame = 15;
+const _x = 4;
+const _y = _milliSecondsPerFrame ~/ _x;
 
 class ParticleGenerator {
   ParticleGenerator(this.port);
@@ -15,11 +17,11 @@ class ParticleGenerator {
   List<Particle> particles = [];
   Wind wind = Wind.init();
 
-  void init() => Timer.periodic(Duration(milliseconds: 1), _update);
+  void init() => Timer.periodic(Duration(milliseconds: _x), _update);
 
   void _update(Timer timestamp) {
     // カウンターが1F進んだらリセットする
-    if (timestamp.tick % _milliSecondsPerFrame == 15) {
+    if (timestamp.tick % _y == 0) {
       port.send(particles);
       particles.clear();
     }
@@ -51,6 +53,7 @@ class AppState {
     if (hasListen) return;
     _receivePort.listen((message) {
       if (message is List<Particle>) {
+        _particles.clear();
         _particles = message;
       }
     });
