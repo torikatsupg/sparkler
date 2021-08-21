@@ -12,7 +12,7 @@ class Canvas extends StatefulWidget {
 
 class CanvasState extends State<Canvas> with SingleTickerProviderStateMixin {
   late final AnimationController controller;
-  final state = AppState()..init();
+  final state = AppState();
 
   @override
   void initState() {
@@ -39,7 +39,7 @@ class CanvasState extends State<Canvas> with SingleTickerProviderStateMixin {
           filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
           child: SizedBox.expand(
             child: ColoredBox(
-              color: Color.fromRGBO(0, 0, 0, 0.8),
+              color: Color.fromRGBO(0, 0, 0, 0.85),
             ),
           ),
         ),

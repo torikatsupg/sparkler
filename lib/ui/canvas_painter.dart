@@ -18,7 +18,7 @@ class CanvasPainter extends CustomPainter {
         Offset(centerX + e.position.x, centerY + e.position.y),
         Paint()
           ..color = e.color
-          ..maskFilter = MaskFilter.blur(BlurStyle.outer, e.shigma)
+          ..maskFilter = MaskFilter.blur(BlurStyle.normal, e.sigma)
           ..strokeWidth = max(e.deameter, 0.001));
     particles.forEach(draw);
     canvas.drawCircle(Offset(size.width / 2, size.height / 2), 0.01,

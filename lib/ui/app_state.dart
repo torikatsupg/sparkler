@@ -5,13 +5,13 @@ import 'package:sparkler/model/particle.dart';
 import 'package:sparkler/model/spark.dart';
 import 'package:sparkler/model/wind.dart';
 
-const _sparkGenerateWeight = 0.93;
-const _milliSecondsPerFrame = 15;
-const _x = 4;
+const _sparkGenerateWeight = 0.95;
+const _milliSecondsPerFrame = 16;
+const _x = 3;
 const _y = _milliSecondsPerFrame ~/ _x;
 
-class ParticleGenerator {
-  ParticleGenerator(this.port);
+class _ParticleGenerator {
+  _ParticleGenerator(this.port);
   SendPort port;
   Iterable<Spark> sparks = [];
   List<Particle> particles = [];
@@ -62,7 +62,7 @@ class AppState {
 }
 
 void _init(dynamic initialMessage) {
-  if (initialMessage is SendPort) ParticleGenerator(initialMessage)..init();
+  if (initialMessage is SendPort) _ParticleGenerator(initialMessage)..init();
 }
 
 void invokeIsolate(SendPort initialMessage) {

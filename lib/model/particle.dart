@@ -11,9 +11,9 @@ class Particle {
   final Vector prevPosition;
   final double deameter;
 
-  late final Color color = Color.fromRGBO(255, 95, 45, 1);
+  late final Color color = Color.fromRGBO(255, 255, 255, 1);
 
-  late final double shigma = () {
+  late final double sigma = () {
     final z = position.z.abs();
     if (z < 0.035) return 0.00005;
     if (z < 0.040) return 0.0003;
